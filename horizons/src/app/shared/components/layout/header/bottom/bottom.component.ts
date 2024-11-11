@@ -12,6 +12,5 @@ export class BottomComponent {
   onWindowScroll(event: any) {
     this.scrollPosition =
       window.pageYOffset || document.documentElement.scrollTop;
-    console.log(this.scrollPosition);
   }
 }

@@ -18,13 +18,11 @@ export class SpinnerInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    console.log(request);
     this.store.dispatch(appActions.showSpinner());
 
     return next.handle(request).pipe(
       tap((event: any) => {
         if (event.status !== undefined && event.status !== null) {
-          console.log(event.status);
           this.store.dispatch(appActions.hideSpinner());
         }
       })
