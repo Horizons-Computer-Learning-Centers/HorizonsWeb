@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
         })
       )
       .subscribe(noop, (error: any) => {
-        console.log(error);
+        // log error here
       });
   }
 
