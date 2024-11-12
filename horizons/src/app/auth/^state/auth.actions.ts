@@ -8,9 +8,18 @@ export const login = createAction(
 
 export const logout = createAction('[Top Menu] Logout');
 
+export const validateToken = createAction('[Token] Validate Token', props<{ user: User }>());
+
+export const isValidToken = createAction('[Auth] Is Valid Token');
+
+export const isInvalidToken = createAction('[Auth] Is Invalid Token');
+
 const authActions = {
   login,
   logout,
+  validateToken,
+  isValidToken,
+  isInvalidToken
 };
 
 export default authActions;

@@ -62,7 +62,9 @@ export class AppComponent implements OnInit {
   assertUser(): void {
     const user = this.storage.getObject(StorageEnums.User);
     if (user) {
-      this.store.dispatch(authActions.login({ user }));
+      this.store.dispatch(authActions.validateToken({ user }));
+    } else {
+      this.store.dispatch(authActions.logout());
     }
   }
 }
