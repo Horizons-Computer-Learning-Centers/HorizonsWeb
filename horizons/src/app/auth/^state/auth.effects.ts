@@ -1,57 +1,46 @@
 import { Injectable } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import {catchError, map, mergeMap, of, switchMap, tap} from 'rxjs';
+import {catchError, map, concatMap, switchMap, tap, of} from 'rxjs';
 import * as AuthActions from './auth.actions';
 import { Router } from '@angular/router';
 import { StorageEnums } from '../../shared/enums/storage-enums';
-import {AuthService, TokenValidationDto} from "../../shared/api/auth-api";
-import authActions from "./auth.actions";
+import { AuthService, TokenValidationDto } from "../../shared/api/auth-api";
 
 @Injectable()
 export class AuthEffects {
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.login),
-      mergeMap((action: any) => {
-        localStorage.setItem(StorageEnums.User, JSON.stringify(action.user));
-        return [AuthActions.isValidToken()];
-      })
+      tap((action) => localStorage.setItem(StorageEnums.User, JSON.stringify(action.user))),
+      map(() => AuthActions.isValidToken())
     )
   );
 
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
-      mergeMap((action: any) => {
+      tap(() => {
         localStorage.removeItem(StorageEnums.User);
         this.router.navigateByUrl('/auth/login');
-        return [AuthActions.isInvalidToken()];
-      })
+      }),
+      map(() => AuthActions.isInvalidToken())
     )
   );
 
   validateToken$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(authActions.validateToken),
-      switchMap((action: any) => {
-        const tokenValidationDto: TokenValidationDto = {
-          token: action.user.token,
-        };
+      ofType(AuthActions.validateToken),
+      switchMap((action) => {
+        const tokenValidationDto: TokenValidationDto = { token: action.user.token };
         return this.authService.validateToken(tokenValidationDto).pipe(
-          mergeMap((isValid) => {
-            if (isValid) {
-              return [
-                authActions.isValidToken(),
-                authActions.login({ user: action.user }),
-              ];
-            } else {
-              return [
-                authActions.isInvalidToken(),
-                authActions.logout(),
-              ];
-            }
-          }),
-          catchError(() => of(authActions.isInvalidToken(), authActions.logout()))
+          concatMap((isValid) => isValid
+            ? [AuthActions.isValidToken(), AuthActions.login({ user: action.user })]
+            : [AuthActions.isInvalidToken(), AuthActions.logout()]
+          ),
+          catchError((error) => {
+            console.error('Token validation error:', error);
+            return of(AuthActions.isInvalidToken(), AuthActions.logout());
+          })
         );
       })
     )
