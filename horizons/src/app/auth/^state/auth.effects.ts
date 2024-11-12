@@ -9,27 +9,25 @@ import authActions from "./auth.actions";
 
 @Injectable()
 export class AuthEffects {
-  login$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.login),
-        tap((action) =>
-          localStorage.setItem(StorageEnums.User, JSON.stringify(action.user))
-        )
-      ),
-    { dispatch: false }
+  login$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.login),
+      mergeMap((action: any) => {
+        localStorage.setItem(StorageEnums.User, JSON.stringify(action.user));
+        return [AuthActions.isValidToken()];
+      })
+    )
   );
 
-  logout$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.logout),
-        tap((action) => {
-          localStorage.removeItem(StorageEnums.User);
-          this.router.navigateByUrl('/auth/login');
-        })
-      ),
-    { dispatch: false }
+  logout$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.logout),
+      mergeMap((action: any) => {
+        localStorage.removeItem(StorageEnums.User);
+        this.router.navigateByUrl('/auth/login');
+        return [AuthActions.isInvalidToken()];
+      })
+    )
   );
 
   validateToken$ = createEffect(() =>
