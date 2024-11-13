@@ -3,3 +3,9 @@
   margin: 0 auto;
   padding-top: 55px;
 }
+
+.form-group-stacked > :first-child .form-control {
+  &.is-invalid {
+    margin-bottom: 0px;
+  }
+}

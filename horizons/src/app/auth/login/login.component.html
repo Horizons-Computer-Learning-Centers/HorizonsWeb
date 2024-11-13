@@ -12,6 +12,7 @@
         <input
           required
           formControlName="email"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
           autocomplete="off"
           type="email"
           class="form-control"
@@ -26,6 +27,7 @@
         <input
           required
           formControlName="password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
           type="password"
           class="form-control"
           id="password"
