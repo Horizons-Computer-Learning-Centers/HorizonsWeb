@@ -4,6 +4,7 @@ import { AuthService, RegistrationRequest } from '../../shared/api/auth-api';
 import { ToastrService } from 'ngx-toastr';
 import { ResponseEnum } from '../../shared/enums/response.enum';
 import { Router } from '@angular/router';
+import {MustMatch} from "./must-match";
 
 @Component({
   selector: 'horizons-register',
@@ -23,10 +24,13 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+    },{
+      validators: MustMatch('password', 'confirmPassword')
     });
   }
 

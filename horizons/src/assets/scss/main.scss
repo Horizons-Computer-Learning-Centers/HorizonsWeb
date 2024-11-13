@@ -3,3 +3,9 @@
 
 // Load all the components
 @import '@webpixels/css/components';
+
+.form-control:focus,
+.form-control.is-invalid:focus {
+  box-shadow: none;
+  outline: none;
+}
